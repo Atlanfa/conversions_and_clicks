@@ -1,0 +1,14 @@
+{% extends "base_generic.html" %}
+{% block content %}
+        <h1>Welcome to Website Home</h1>
+            <p>This is home of <em>Conversions & Clicks Displayer</em></p>
+            {% if user.is_authenticated %}
+                <p>You are logged in as {{ user.username }}</p>
+                <p>To start viewing conversions, clic Conversions on sidebar</p>
+                <p>To start viewing clicks, clic Clicks on sidebar</p>
+            {% else %}
+                <p>You are not logged in</p>
+                <p>If you still not registered use <a href="">telegram bot</a></p>
+                <p>If you already registered use Login button on sidebar</p>
+            {% endif %}
+{% endblock %}
