@@ -62,10 +62,20 @@ async def register_id(message: types.Message, state: FSMContext):
         if await check_id(message.text):
             await message.reply("Please enter your email")
             await state.update_data(id=message.text)
+            await state.update_data(buyer=get_buyer_name(message.text))
             await Register.next()
         else:
             await message.reply("ID is not valid")
             await Register.waiting_for_id.set()
+
+
+async def get_buyer_name(id: str):
+    # get buyer name from correct_ids.json
+    with open("correct_ids.json", "r") as f:
+        correct_ids = json.load(f)
+    for key, value in correct_ids.items():
+        if value == int(id):
+            return key
 
 
 async def register_email(message: types.Message, state: FSMContext):
@@ -81,9 +91,9 @@ async def register_email(message: types.Message, state: FSMContext):
 
 
 @sync_to_async
-def create_user(email: str, password: str, id: int):
+def create_user(email: str, password: str, id: int, buyer: str):
     user = User.objects.create_user(username=email, email=email, password=password)
-    profile = Profile(user=user, id=id)
+    profile = Profile(user=user, id=id, buyer=buyer)
     return user, profile
 
 
@@ -98,7 +108,7 @@ async def register_password(message: types.Message, state: FSMContext):
     if check_password(message.text):
         # get email from Register state and register new user in Django website
         data = await state.get_data()
-        user, profile = await create_user(data["email"], message.text, data["id"])
+        user, profile = await create_user(data["email"], message.text, data["id"], data["buyer"])
         await save_user(user, profile)
         await message.reply("You are registered")
         await state.finish()
