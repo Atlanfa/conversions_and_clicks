@@ -14,4 +14,11 @@ class Profile(models.Model):
         return self.user.username
 
 
+class DateRange(models.Model):
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+
+    def __str__(self):
+        return f'{self.start_date} - {self.end_date}'
+
 

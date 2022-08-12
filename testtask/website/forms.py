@@ -1,10 +1,23 @@
 from django import forms
+from django.forms import ModelForm
+
+from website.models import DateRange
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 
 # form for choosing two dates, first must be before second or equal
-class DateRangeForm(forms.Form):
-    start_date = forms.DateField(label='Start Date')
-    end_date = forms.DateField(label='End Date')
+class DateRangeForm(ModelForm):
+
+    class Meta:
+        model = DateRange
+        fields = ['start_date', 'end_date']
+        widgets = {
+            'start_date': DateInput(),
+            'end_date': DateInput(),
+        }
 
     def clean(self):
         cleaned_data = super().clean()

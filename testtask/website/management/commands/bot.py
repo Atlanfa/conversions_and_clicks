@@ -62,7 +62,7 @@ async def register_id(message: types.Message, state: FSMContext):
         if await check_id(message.text):
             await message.reply("Please enter your email")
             await state.update_data(id=message.text)
-            await state.update_data(buyer=get_buyer_name(message.text))
+            await state.update_data(buyer=await get_buyer_name(message.text))
             await Register.next()
         else:
             await message.reply("ID is not valid")
@@ -93,7 +93,11 @@ async def register_email(message: types.Message, state: FSMContext):
 @sync_to_async
 def create_user(email: str, password: str, id: int, buyer: str):
     user = User.objects.create_user(username=email, email=email, password=password)
-    profile = Profile(user=user, id=id, buyer=buyer)
+    # check if buyer equals bogdan or not
+    if buyer == "lovelas":
+        profile = Profile(user=user, id=id, buyer=buyer)
+    else:
+        profile = Profile(user=user, id=id, buyer=buyer, buyer_sub_id=buyer)
     return user, profile
 
 
@@ -194,8 +198,6 @@ class Command(BaseCommand):
     help = 'Starts the bot'
 
     def handle(self, *args, **options):
-        asyncio.run(main())
         self.stdout.write(self.style.SUCCESS('Bot is running'))
+        asyncio.run(main())
         return 0
-
-
